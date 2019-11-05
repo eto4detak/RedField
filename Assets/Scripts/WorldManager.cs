@@ -8,7 +8,7 @@ public class WorldManager : MonoBehaviour
     void Start()
     {
         
-        CreateHumanWarrior();
+       // CreateHumanWarrior();
     }
 
     void Update()
