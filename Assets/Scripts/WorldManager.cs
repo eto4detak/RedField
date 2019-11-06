@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
@@ -7,8 +8,7 @@ public class WorldManager : MonoBehaviour
 
     void Start()
     {
-        
-       // CreateHumanWarrior();
+        CreateHumanWarrior();
     }
 
     void Update()
@@ -32,11 +32,8 @@ public class WorldManager : MonoBehaviour
 
                // warrion.NewPosition = position +  new Vector3(i * 1.0f, 0, i * 1.0f);
                 warrion.NewPosition = new Vector3(10f, 5f, 10f);
-
+                //SelectObjects.unit.Add(warrion.gameObject);
             }
-
-            
         }
-
     }
 }
