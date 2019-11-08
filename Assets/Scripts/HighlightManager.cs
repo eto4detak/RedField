@@ -10,7 +10,6 @@ class HighlightManager
 
     }
 
-
     public static void Clear()
     {
         if(highlightedObjects.Count > 0)

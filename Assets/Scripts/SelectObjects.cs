@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class SelectObjects : MonoBehaviour
     private bool draw;
     private Vector2 startPos;
     private Vector2 endPos;
+    private float minY = 0;
 
     void Awake()
     {
@@ -30,7 +32,7 @@ public class SelectObjects : MonoBehaviour
     }
 
 
-    public static void SetAllowedSelectObject(GameObject obj)
+    public static void SetAllowed(GameObject obj)
     {
         allowedSelectObj.Add(obj);
     }
@@ -54,7 +56,7 @@ public class SelectObjects : MonoBehaviour
 
     void Deselect()
     {
-        if (selectedObjects.Count > 0)
+        if ( selectedObjects.Count > 0)
         {
             for (int j = 0; j < selectedObjects.Count; j++)
             {
@@ -69,8 +71,24 @@ public class SelectObjects : MonoBehaviour
         }
     }
 
+    private Vector2 GetAvailablePosition(Vector2 point)
+    {
+        if (point.y < minY)
+        {
+            point.y = minY;
+        }
+        return point;
+    }
+
+    public void SetForbiddenPosition(Vector2 point)
+    {
+        minY = point.y;
+    }
+
+
     void OnGUI()
     {
+
         GUI.skin = skin;
         GUI.depth = 99;
 
@@ -89,9 +107,12 @@ public class SelectObjects : MonoBehaviour
 
         if (draw)
         {
+            if (!CheckPosition(startPos, endPos)) return;
             selectedObjects.Clear();
             endPos = Input.mousePosition;
             if (startPos == endPos) return;
+
+            endPos = GetAvailablePosition(endPos);
 
             rect = new Rect(Mathf.Min(endPos.x, startPos.x),
                             Screen.height - Mathf.Max(endPos.y, startPos.y),
@@ -120,5 +141,14 @@ public class SelectObjects : MonoBehaviour
                 }
             }
         }
+    }
+
+    private bool CheckPosition(Vector2 startPos, Vector2 endPos)
+    {
+        if(startPos.y > minY)
+        {
+            return true;
+        }
+        return false;
     }
 }

@@ -8,7 +8,6 @@ public class RunUnitManager : MonoBehaviour
     //Animator animator;
     // NavMeshAgent agent;
     HighlightManager highlight = new HighlightManager();
-    public Camera cam;
     internal static IList<Unit> selectedUnits = new List<Unit>();
     //private bool isClear
 
@@ -53,7 +52,7 @@ public class RunUnitManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             ClearSelectUnits();
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
@@ -73,13 +72,13 @@ public class RunUnitManager : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(1))
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
                 foreach (var unit in selectedUnits)
                 {
-                    unit.gameObject.GetComponent<NavMeshAgent>().destination = hit.point;
+                    unit.agent.destination = hit.point;
                 }
             }
 

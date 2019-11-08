@@ -1,19 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
     private HumanWarrior humanWarrior;
-    
 
+    public static BottomPanel bottomPanel;
+    public static Character character;
+    public static SelectObjects selectObjects;
+    public static float startPositionY = 5.5f;
+    public static float minPositionY = -0.1f;
+    public static float deltaPositionY = 0.1f;
+
+
+    void Awake()
+    {
+        bottomPanel = (BottomPanel)FindObjectOfType(typeof(BottomPanel));
+        character = (Character)FindObjectOfType(typeof(Character));
+        selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
+        
+    }
     void Start()
     {
+        SetSettings();
         CreateHumanWarrior();
     }
+
+
 
     void Update()
     {
         
+    }
+    private void SetSettings()
+    {
+        RectTransform rt = bottomPanel.GetComponent(typeof(RectTransform)) as RectTransform;
+        selectObjects.SetForbiddenPosition(rt.offsetMax);
     }
 
     public void CreateHumanWarrior()

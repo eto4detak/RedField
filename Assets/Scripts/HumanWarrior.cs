@@ -8,11 +8,9 @@ public class HumanWarrior : Unit
     // Start is called before the first frame update
     void Start()
     {
-        SelectObjects.SetAllowedSelectObject(gameObject);
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         RunToPoint();
@@ -25,6 +23,8 @@ public class HumanWarrior : Unit
         }
         return prefab;
     }
+
+
 
 
 }
