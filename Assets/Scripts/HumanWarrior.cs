@@ -2,19 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanWarrior : Unit
+public class HumanWarrior : MoveUnit
 {
-
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-
+        base.Awake();
+    }
+    // Start is called before the first frame update
+    protected override void Start()
+    {
+        base.Start();
+        health = 44f;
+        maxHealth = 77f;
+        faction = Faction.Hostile;
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         RunToPoint();
     }
+
+
     public static GameObject GetPrefab()
     {
         if (prefab == null)

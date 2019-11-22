@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class CanvasTripod : MonoBehaviour
 {
@@ -8,13 +8,43 @@ public class CanvasTripod : MonoBehaviour
     private bool orientate = true;
     private bool scale = false;
     private Vector3 initialScale;
+
+    private Unit currentUnit;
+    [Tooltip("Image component displaying health left")]
+    public Image healthBarImage;
+    [Tooltip("The floating healthbar pivot transform")]
+    public Transform healthBarPivot;
+    [Tooltip("Whether the health bar is visible when at full health or not")]
+    public bool hideFullHealthBar = false;
+
     // Use this for initialization
     void Start()
     {
-        initialScale = transform.localScale;
+        currentUnit = gameObject.GetComponentInParent<Unit>();
         cam = Camera.main.gameObject;
+        initialScale = transform.localScale;
     }
     void Update()
+    {
+        UpdateRatation();
+        UpdateValues();
+    }
+
+
+    private void UpdateValues()
+    {
+        if (currentUnit != null)
+        {
+            healthBarImage.fillAmount = currentUnit.health / currentUnit.maxHealth;
+
+            if (hideFullHealthBar)
+            {
+                healthBarPivot.gameObject.SetActive(healthBarImage.fillAmount != 1);
+            }
+        }
+    }
+
+    private void UpdateRatation()
     {
         //billboarding the canvas
         if (orientate)
@@ -30,6 +60,7 @@ public class CanvasTripod : MonoBehaviour
             transform.localScale = initialScale * dist * objectScale;
         }
     }
+
     // Update is called once per frame
     void LateUpdate()
     {

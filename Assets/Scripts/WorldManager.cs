@@ -9,6 +9,9 @@ public class WorldManager : MonoBehaviour
     public static BottomPanel bottomPanel;
     public static Character character;
     public static SelectObjects selectObjects;
+    public static RunUnitManager runUnitManager;
+    public static PlayerInputHandler playerInputHandler;
+    
     public static float startPositionY = 5.5f;
     public static float minPositionY = -0.1f;
     public static float deltaPositionY = 0.1f;
@@ -19,6 +22,8 @@ public class WorldManager : MonoBehaviour
         bottomPanel = (BottomPanel)FindObjectOfType(typeof(BottomPanel));
         character = (Character)FindObjectOfType(typeof(Character));
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
+        runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
+        playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
         
     }
     void Start()

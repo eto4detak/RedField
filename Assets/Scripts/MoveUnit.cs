@@ -17,8 +17,9 @@ public class MoveUnit : Unit
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-       // base.Update();
+        base.Update();
     }
+
 }

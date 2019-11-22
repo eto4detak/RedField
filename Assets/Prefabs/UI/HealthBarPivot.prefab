@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5094475455341428261}
   - component: {fileID: 5916979386762800420}
   - component: {fileID: 4940836283430292877}
+  - component: {fileID: 5956565106885684948}
   m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
@@ -104,6 +105,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5956565106885684948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3223823266275682275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e55d0faf251332449ae682eaf8b9a3ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarImage: {fileID: 8614407222455120183}
+  healthBarPivot: {fileID: 3823085984192757639}
+  hideFullHealthBar: 1
 --- !u!1 &3978815238093581231
 GameObject:
   m_ObjectHideFlags: 0
@@ -277,7 +293,7 @@ MonoBehaviour:
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &6079065715521428221
 GameObject:
@@ -349,7 +365,7 @@ MonoBehaviour:
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &6929404794748469799
 GameObject:
@@ -421,7 +437,7 @@ MonoBehaviour:
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &6936425081506572034
 GameObject:

@@ -2,26 +2,26 @@
 using System.Collections;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System;
 
 public class RunUnitManager : MonoBehaviour
 {
-    //Animator animator;
-    // NavMeshAgent agent;
     HighlightManager highlight = new HighlightManager();
-    internal static IList<Unit> selectedUnits = new List<Unit>();
-    //private bool isClear
+    
+    private void Awake()
+    {
+       
+    }
+
 
     void Start()
     {
-        // animator = GetComponent<Animator>();
-        //agent = GetComponent<NavMeshAgent>();
+
     }
 
     void Update()
     {
-        // FindGameObjectUnderMouse();
-        //HighlightUnits();
-        MoveUnit();
+
     }
 
 
@@ -29,39 +29,60 @@ public class RunUnitManager : MonoBehaviour
     {
         foreach (var unit in units)
         {
-            selectedUnits.Add(unit);
+            SelectObjects.SelectUnit(unit);
         }
     }
     public static void SetSelectedUnit(Unit unit)
     {
-        selectedUnits.Add(unit);
+        SelectObjects.SelectUnit(unit);
     }
     public static void RemoveSelectedUnit(Unit unit)
     {
-        selectedUnits.Remove(unit);
+        SelectObjects.SelectUnit(unit);
     }
 
-    public static void ClearSelectUnits()
-    {
-        //HighlightManager.ClearHighlightUnits(selectedUnits);
-        selectedUnits.Clear();
-    }
 
-    private void FindGameObjectUnderMouse()
+    //private void FindGameObjectUnderMouse()
+    //{
+    //    if (Input.GetMouseButtonUp(0))
+    //    {
+    //        SelectObjects.Deselect();
+    //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //        RaycastHit hit;
+    //        if (Physics.Raycast(ray, out hit))
+    //        {
+    //            if (hit.collider != null  )
+    //            {
+    //                Unit unit = hit.collider.gameObject.GetComponent<Unit>();
+    //                if (unit != null)
+    //                {
+    //                    SelectObjects.selectedObjects.Add(unit);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+    internal static void UnitMouseOverHandler(Unit unit)
     {
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButton(0))
         {
-            ClearSelectUnits();
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            SelectObjects.Deselect();
+            SelectObjects.SelectUnit(unit);
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            if(SelectObjects.selectedObjects.Count > 0)
             {
-                if (hit.collider != null  )
+                List<Unit> targets = new List<Unit>();
+                targets.Add(unit);
+                foreach (var attacking in SelectObjects.selectedObjects)
                 {
-                    Unit unit = hit.collider.gameObject.GetComponent<Unit>();
-                    if (unit != null)
+
+                    if (attacking != null)
                     {
-                        selectedUnits.Add(unit);
+                        Debug.Log(attacking.name + "attacing 111 " + attacking.name);
+                        attacking.SetAttackTarget(targets);
                     }
                 }
             }
@@ -72,13 +93,14 @@ public class RunUnitManager : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(1))
         {
+            Debug.Log("run " + this.name);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                foreach (var unit in selectedUnits)
+                foreach (var selected in SelectObjects.selectedObjects)
                 {
-                    unit.agent.destination = hit.point;
+                    selected.agent.destination = hit.point;
                 }
             }
 
@@ -92,6 +114,13 @@ public class RunUnitManager : MonoBehaviour
         //{
         //    animator.SetBool("walk", false);
         //}
+    }
+
+    void OnDrawGizmosSelected1111()
+    {
+        Vector3 p = Camera.main.ScreenToWorldPoint(new Vector3(100, 100, Camera.main.nearClipPlane));
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(p, 0.1F);
     }
 
 }

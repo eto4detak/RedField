@@ -1403,7 +1403,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 396026436867156439}
-  - {fileID: 1821214438563723178}
+  - {fileID: 4452627948596864018}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1449,9 +1449,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5508661102687592458}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Mass: 6
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -2744,7 +2744,7 @@ Transform:
   m_Father: {fileID: 5435819454455618323}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &3190822959865546797
+--- !u!1001 &631838708919884693
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -2813,9 +2813,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ebe18df2c662604dafea689278973b7, type: 3}
---- !u!4 &1821214438563723178 stripped
+--- !u!4 &4452627948596864018 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3823085984192757639, guid: 9ebe18df2c662604dafea689278973b7,
     type: 3}
-  m_PrefabInstance: {fileID: 3190822959865546797}
+  m_PrefabInstance: {fileID: 631838708919884693}
   m_PrefabAsset: {fileID: 0}

@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class SelectObjects : MonoBehaviour
 {
-    public static List<GameObject> allowedSelectObj = new List<GameObject>(); // массив всех юнитов, которых мы можем выделить
-    public static List<GameObject> selectedObjects; // выделенные объекты
+    public static List<Unit> allowedSelectObj = new List<Unit>(); // массив всех юнитов, которых мы можем выделить
+    public static List<Unit> selectedObjects; // выделенные объекты
 
     public GUISkin skin;
     private Rect rect;
@@ -17,14 +17,88 @@ public class SelectObjects : MonoBehaviour
 
     void Awake()
     {
-        selectedObjects = new List<GameObject>();
+        selectedObjects = new List<Unit>();
     }
 
+    private void Update()
+    {
+        foreach (var selected in selectedObjects)
+        {
+            Debug.Log(selected.name + " command = " + selected.command);
+        }
+    }
+
+
+    void OnGUI()
+    {
+        TryDrawSelectBox();
+    }
+
+    private void TryDrawSelectBox()
+    {
+        GUI.skin = skin;
+        GUI.depth = 99;
+        if (Input.GetMouseButtonDown(0))
+        {
+           // Deselect();
+            startPos = Input.mousePosition;
+            draw = true;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            draw = false;
+            Select();
+        }
+
+        if (draw)
+        {
+            if (!CheckPosition(startPos, endPos)) return;
+            endPos = Input.mousePosition;
+            if (startPos == endPos) return;
+            endPos = GetAvailablePosition(endPos);
+            selectedObjects.Clear();
+
+            DrawSelectBox();
+        }
+    }
+
+    private void DrawSelectBox()
+    {
+        rect = new Rect(Mathf.Min(endPos.x, startPos.x),
+                        Screen.height - Mathf.Max(endPos.y, startPos.y),
+                        Mathf.Max(endPos.x, startPos.x) - Mathf.Min(endPos.x, startPos.x),
+                        Mathf.Max(endPos.y, startPos.y) - Mathf.Min(endPos.y, startPos.y)
+                        );
+
+        GUI.Box(rect, "");
+
+        for (int j = 0; j < allowedSelectObj.Count; j++)
+        {
+            // трансформируем позицию объекта из мирового пространства, в пространство экрана
+            Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
+                Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
+
+            if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
+            {
+                if (selectedObjects.Count == 0)
+                {
+                    selectedObjects.Add(allowedSelectObj[j]);
+                }
+                else if (!CheckUnit(allowedSelectObj[j]))
+                {
+                    selectedObjects.Add(allowedSelectObj[j]);
+                }
+            }
+        }
+    }
+
+
     // проверка, добавлен объект или нет
-    bool CheckUnit(GameObject unit)
+    bool CheckUnit(Unit unit)
     {
         bool result = false;
-        foreach (GameObject u in selectedObjects)
+        foreach (Unit u in selectedObjects)
         {
             if (u == unit) result = true;
         }
@@ -32,43 +106,40 @@ public class SelectObjects : MonoBehaviour
     }
 
 
-    public static void SetAllowed(GameObject obj)
+    public static void SetAllowed(Unit obj)
     {
         allowedSelectObj.Add(obj);
     }
 
-    void Select()
+    private static void Select()
     {
         if (selectedObjects.Count > 0)
         {
             for (int j = 0; j < selectedObjects.Count; j++)
             {
-                Unit unit = selectedObjects[j].GetComponent<Unit>();
+                Unit unit = selectedObjects[j];
                 if (unit != null)
                 {
-                    //RunUnitManager.selectedUnits.Add(unit);
-                    RunUnitManager.SetSelectedUnit(unit);
                     HighlightManager.HighlightUnit(unit);
                 }
             }
         }
     }
 
-    void Deselect()
+    public static void SelectUnit(Unit unit)
     {
-        if ( selectedObjects.Count > 0)
-        {
-            for (int j = 0; j < selectedObjects.Count; j++)
-            {
-                Unit unit = selectedObjects[j].GetComponent<Unit>();
-                if (unit != null)
-                {
-                    
-                }
-            }
-            RunUnitManager.ClearSelectUnits();
-            HighlightManager.Clear();
-        }
+        selectedObjects.Add(unit);
+        Select();
+    }
+    //public static void DeselectUnit(Unit unit)
+    //{
+    //    selectedObjects.Remove(unit);
+    //}
+
+    public static void Deselect()
+    {
+        selectedObjects.Clear();
+        HighlightManager.Clear();
     }
 
     private Vector2 GetAvailablePosition(Vector2 point)
@@ -85,59 +156,29 @@ public class SelectObjects : MonoBehaviour
         minY = point.y;
     }
 
-
-    void OnGUI()
+    public void SetSelected(Rect rect)
     {
-
-        GUI.skin = skin;
-        GUI.depth = 99;
-
-        if (Input.GetMouseButtonDown(0))
+        for (int j = 0; j < allowedSelectObj.Count; j++)
         {
-            Deselect();
-            startPos = Input.mousePosition;
-            draw = true;
-        }
+            // трансформируем позицию объекта из мирового пространства, в пространство экрана
+            Vector2 tmp1 = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
+                Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
+            Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
+                Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            draw = false;
-            Select();
-        }
-
-        if (draw)
-        {
-            if (!CheckPosition(startPos, endPos)) return;
-            selectedObjects.Clear();
-            endPos = Input.mousePosition;
-            if (startPos == endPos) return;
-
-            endPos = GetAvailablePosition(endPos);
-
-            rect = new Rect(Mathf.Min(endPos.x, startPos.x),
-                            Screen.height - Mathf.Max(endPos.y, startPos.y),
-                            Mathf.Max(endPos.x, startPos.x) - Mathf.Min(endPos.x, startPos.x),
-                            Mathf.Max(endPos.y, startPos.y) - Mathf.Min(endPos.y, startPos.y)
-                            );
-
-            GUI.Box(rect, "");
-
-            for (int j = 0; j < allowedSelectObj.Count; j++)
+            if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
             {
-                // трансформируем позицию объекта из мирового пространства, в пространство экрана
-                Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
-                    Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
-
-                if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
+                if (selectedObjects.Count == 0)
                 {
-                    if (selectedObjects.Count == 0)
-                    {
-                        selectedObjects.Add(allowedSelectObj[j]);
-                    }
-                    else if (!CheckUnit(allowedSelectObj[j]))
-                    {
-                        selectedObjects.Add(allowedSelectObj[j]);
-                    }
+                    Debug.Log("allowedSelectObj");
+
+                    selectedObjects.Add(allowedSelectObj[j]);
+                }
+                else if (!CheckUnit(allowedSelectObj[j]))
+                {
+                    Debug.Log("!CheckUnit(");
+
+                    selectedObjects.Add(allowedSelectObj[j]);
                 }
             }
         }
@@ -151,4 +192,11 @@ public class SelectObjects : MonoBehaviour
         }
         return false;
     }
+
+    public static void ClearSelected()
+    {
+        selectedObjects.Clear();
+        HighlightManager.Clear();
+    }
+
 }

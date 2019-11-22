@@ -9,11 +9,18 @@ public class Character : MoveUnit
         base.Awake();
         jumpForce = 60f;
         slowDown = 5f;
+        health = 100f;
+        maxHealth = 200f;
+        mana = 100f;
+        maxMana = 100f;
+        aggression = 0f;
+        faction = Faction.Hero;
     }
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
     }
 
     // Update is called once per frame
@@ -25,15 +32,10 @@ public class Character : MoveUnit
             SlowDown();
         }
 
-       // Debug.Log(agent.velocity);
-       //Debug.Log(rb.velocity);
-
     }
 
     private void OnCollisionEnter(Collision other)
     {
-       // return;
-        
         if (!isGrounded)
         {
             rb.isKinematic = true;
