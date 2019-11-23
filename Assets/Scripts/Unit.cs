@@ -4,35 +4,31 @@ using UnityEngine.AI;
 
 public class Unit : MonoBehaviour
 {
-    internal static GameObject prefab;
-
-    private Vector3? newPosition;
-
-    protected float slowDown = 1f;
-
-    internal float runSpeed = 2f;
+    internal float aggression = 0f;
+    internal NavMeshAgent agent;
+    internal float attackRadius = 2f;
+    protected List<float> allTypeAggression = new List<float>();
+    public UnitCommand command;
+    protected List<Unit> commandTargets = new List<Unit>();
+    internal bool canDamage = true;
+    internal bool canRun = true;
+    internal float domageVal = 1f;
+    protected Faction faction = Faction.Neutral;
+    internal float jumpForce = 20.0f;
+    internal bool isGrounded = true;
     internal float health = 1f;
     internal float maxHealth = 1f;
     internal float mana = 1f;
     internal float maxMana = 1f;
-    internal float aggression = 0f;
     internal float maxAggression = 1f;
-    internal float domageVal = 1f;
-
-    internal float attackRadius = 2f;
-    protected List<Unit> commandTargets = new List<Unit>(); 
-    protected List<float> allTypeAggression = new List<float>();
-    protected Faction faction = Faction.Neutral;
-    public UnitCommand command;
     protected UnitStatus status = UnitStatus.Norm;
-
-    internal bool canDamage = true;
-    internal bool canRun = true;
+    internal UnitGroup selfGroup;
+    protected float slowDown = 1f;
+    internal static GameObject prefab;
+    private Vector3? newPosition;
+    internal float runSpeed = 2f;
     internal Rigidbody rb;
-    internal float jumpForce = 20.0f;
-    internal bool isGrounded = true;
 
-    internal NavMeshAgent agent;
     // public LayerMask groundMask;
     // public Transform target;
     //public float groundRadius;
@@ -43,7 +39,7 @@ public class Unit : MonoBehaviour
 
     protected virtual void Awake()
     {
-        command = UnitCommand.Idle;
+      //  command = UnitCommand.Idle;
 
         SelectObjects.SetAllowed(this);
         rb = GetComponent<Rigidbody>();
@@ -60,56 +56,44 @@ public class Unit : MonoBehaviour
     {
         CheckErrorPositionY();
         UpdateAction();
+       
     }
 
     void OnMouseDown()
     {
     }
 
-    void OnMouseOver()
-    {
-        MouseManager.ClickAtUnit(this);
-    }
     void OnMouseExit()
     {
         GetComponentInChildren<Renderer>().material.color = Color.white;
-
     }
 
 
     private void UpdateAction()
     {
 
-        Debug.Log("1 " + name + " " + command);
+        //if (command == UnitCommand.Attack)
+        //{
+        //    if (attackRadius > GetDistanceToTarget())
+        //    {
+        //      //  Debug.Log(name + " Attack " + commandTargets[0].name);
+        //        Damage(commandTargets[0], domageVal);
+        //    }
+        //    else
+        //    {
+        //    }
 
-        if (command == UnitCommand.Attack)
-        {
+        //    if (status == UnitStatus.Battle)
+        //    {
 
-            Debug.Log("2");
+        //    }else if (status == UnitStatus.Run)
+        //    {
 
-            if (attackRadius > GetDistanceToTarget())
-            {
-                Debug.Log(name + " Attack " + commandTargets[0].name);
-                Damage(commandTargets[0], domageVal);
-            }
-            else
-            {
-                Debug.Log("UnitCommand.Attack MoveToPoint");
-
-                //MoveToPoint();
-            }
-
-            if (status == UnitStatus.Battle)
-            {
-
-            }else if (status == UnitStatus.Run)
-            {
-
-            }
-            else
-            {
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //    }
+        //}
     }
 
 
@@ -140,7 +124,7 @@ public class Unit : MonoBehaviour
     public void SetAttackTarget(List<Unit> target)
     {
         commandTargets.Clear();
-        command = UnitCommand.Attack;
+       // command = UnitCommand.Attack;
         commandTargets.AddRange(target);
 
         if (commandTargets.Count > 0)
@@ -201,6 +185,19 @@ public class Unit : MonoBehaviour
         }
     }
 
+
+
+    //public void MoveGroupToPoint( Vector3 point)
+    //{
+
+    //    status = UnitStatus.Run;
+    //    Ray ray = Camera.main.ScreenPointToRay(point);
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        agent.destination = hit.point;
+    //    }
+    //}
 }
 
 public enum Faction : int
@@ -218,13 +215,7 @@ public enum Faction : int
     Hostile,
     Boss,
 }
-public enum UnitCommand : int
-{
-    Idle = 0,
-    Walk,
-    Attack,
-    Patrol,
-}
+
 public enum UnitStatus : int
 {
     Norm = 0,

@@ -5,68 +5,102 @@ using UnityEngine;
 
 public class MouseManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private RaycastHit mouseHit;
+    private Ray mouseRay;
     void Start()
     {
         
     }
+ 
     void Update()
     {
-            
+        CheckLeftClick();
+        CheckRightClick();
     }
 
-    internal static void RightClick(GameObject owner, Vector3 point)
-    {
-        if(owner.GetComponent<Terrain>() is Terrain)
-        {
-            if(SelectObjects.selectedObjects.Count > 0)
-            {
-                foreach (var selectedUnit in SelectObjects.selectedObjects)
-                {
-                    Debug.Log(selectedUnit.name + " MoveToPoint ");
 
-                    selectedUnit.MoveToPoint(point);
+    private void CheckLeftClick()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(mouseRay, out mouseHit, 100))
+            {
+                Unit filter = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
+                if (filter)
+                {
+                    SelectObjects.Deselect();
+                    SelectObjects.SelectUnit(filter);
+                    return;
+                }
+                Terrain filterTerrain = mouseHit.collider.GetComponent(typeof(Terrain)) as Terrain;
+                if (filterTerrain)
+                {
+                    ClickToTerrain(filterTerrain);
+                    return;
                 }
             }
         }
     }
 
-    internal static void LeftClick(GameObject owner, Vector3 point)
+    private void CheckRightClick()
     {
-        if (owner.GetComponent<Terrain>() is Terrain)
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            if (SelectObjects.selectedObjects.Count > 0)
+            mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(mouseRay, out mouseHit, 100))
             {
-                SelectObjects.Deselect();
+                Unit filter = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
+                if (filter)
+                {
+                    ClickRightAtUnit(filter);
+                    return;
+                }
+                Terrain filterTerrain = mouseHit.collider.GetComponent(typeof(Terrain)) as Terrain;
+                if (filterTerrain)
+                {
+                    ClickRightToTerrain(filterTerrain, Input.mousePosition);
+                    return;
+                }
             }
         }
     }
-
-    internal static void ClickAtUnit(Unit target)
+    internal static void ClickToTerrain(Terrain terrain)
     {
-        if (Input.GetMouseButton(0))
+        if (SelectObjects.HaveSelected())
         {
             SelectObjects.Deselect();
-            Debug.Log("ClickAtUnit");
-
-            SelectObjects.SelectUnit(target);
         }
-        else if (Input.GetMouseButtonDown(1))
+    }
+    internal static void ClickRightAtUnit(Unit target)
+    {
+        if (SelectObjects.HaveSelected())
         {
-            if (SelectObjects.selectedObjects.Count > 0)
+            List<Unit> targets = new List<Unit>();
+            targets.Add(target);
+            foreach (var attackingUnit in SelectObjects.selectedObjects)
             {
-                List<Unit> targets = new List<Unit>();
-                targets.Add(target);
-                foreach (var attacking in SelectObjects.selectedObjects)
+                if (attackingUnit != null)
                 {
-                    if (attacking != null)
-                    {
-                        Debug.Log(attacking.name + "attacing " + target.name);
-                        attacking.SetAttackTarget(targets);
-                    }
+                    Debug.Log(attackingUnit.name + "attacing " + target.name);
+                    attackingUnit.SetAttackTarget(targets);
+                }
+            }
+            foreach (var attackingGroup in SelectObjects.selectedGroups)
+            {
+                if (attackingGroup != null)
+                {
+                    
+                    Debug.Log(attackingGroup.name + " attackingGroup " + target.name);
+                    attackingGroup.command = new AttackCommand(target);
+                   // attackingGroup.SetAttackTarget(targets);
                 }
             }
         }
+    }
+    internal static void ClickRightToTerrain(Terrain terrain, Vector3 newPosition)
+    {
+        Formation.SetFormationRow(newPosition);
     }
 
 

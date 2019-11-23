@@ -38,19 +38,19 @@ public class PlayerInputHandler : MonoBehaviour
         return false;
     }
 
-    private void OnRightMouseButton()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
+    //private void OnRightMouseButton()
+    //{
+    //    if (Input.GetMouseButtonDown(1))
+    //    {
+    //        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
 
-            Collider[] intersecting = Physics.OverlapSphere(mousePosition, 0.01f);
-            Rect rect = new Rect(Input.mousePosition, Input.mousePosition);
-            selectObjects.SetSelected(rect);
+    //        Collider[] intersecting = Physics.OverlapSphere(mousePosition, 0.01f);
+    //        Rect rect = new Rect(Input.mousePosition, Input.mousePosition);
+    //        selectObjects.SetSelected(rect);
 
-        }
+    //    }
 
-    }
+    //}
 
 
 }

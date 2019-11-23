@@ -103,7 +103,6 @@ public class RunUnitManager : MonoBehaviour
                     selected.agent.destination = hit.point;
                 }
             }
-
         }
 
         //if (agent.velocity.magnitude > 2f)

@@ -11,6 +11,7 @@ public class WorldManager : MonoBehaviour
     public static SelectObjects selectObjects;
     public static RunUnitManager runUnitManager;
     public static PlayerInputHandler playerInputHandler;
+    public static List<UnitGroup> allGroups = new List<UnitGroup>();
     
     public static float startPositionY = 5.5f;
     public static float minPositionY = -0.1f;
@@ -24,12 +25,18 @@ public class WorldManager : MonoBehaviour
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
         runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
         playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
-        
+        playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
     }
+
+
+
     void Start()
     {
         SetSettings();
-        CreateHumanWarrior();
+
+        StartWorld();
+        
+       // CreateHumanWarrior();
     }
 
 
@@ -38,15 +45,10 @@ public class WorldManager : MonoBehaviour
     {
         
     }
-    private void SetSettings()
-    {
-        RectTransform rt = bottomPanel.GetComponent(typeof(RectTransform)) as RectTransform;
-        selectObjects.SetForbiddenPosition(rt.offsetMax);
-    }
+
 
     public void CreateHumanWarrior()
     {
-
         GameObject prefab = HumanWarrior.GetPrefab();
         if (prefab != null)
         {
@@ -64,4 +66,21 @@ public class WorldManager : MonoBehaviour
             }
         }
     }
+
+    private void SetSettings()
+    {
+        RectTransform rt = bottomPanel.GetComponent(typeof(RectTransform)) as RectTransform;
+        selectObjects.SetForbiddenPosition(rt.offsetMax);
+    }
+
+
+    private void StartWorld()
+    {
+        
+        UnitGroup.CreateUnits(new Vector3(40, 7f, 20));
+        UnitGroup.CreateUnits(new Vector3(40, 5.6f, 40));
+        UnitGroup.CreateUnits(new Vector3(60, 5.6f, 40));
+
+    }
+
 }

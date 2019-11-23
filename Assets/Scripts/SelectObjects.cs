@@ -7,6 +7,7 @@ public class SelectObjects : MonoBehaviour
 {
     public static List<Unit> allowedSelectObj = new List<Unit>(); // массив всех юнитов, которых мы можем выделить
     public static List<Unit> selectedObjects; // выделенные объекты
+    public static List<UnitGroup> selectedGroups; // выделенные объекты
 
     public GUISkin skin;
     private Rect rect;
@@ -18,13 +19,17 @@ public class SelectObjects : MonoBehaviour
     void Awake()
     {
         selectedObjects = new List<Unit>();
+        selectedGroups = new List<UnitGroup>();
     }
 
     private void Update()
     {
-        foreach (var selected in selectedObjects)
+        if(selectedObjects != null)
         {
-            Debug.Log(selected.name + " command = " + selected.command);
+            foreach (var selected in selectedObjects)
+            {
+               // Debug.Log(selected.name + " command = " + selected.command);
+            }
         }
     }
 
@@ -48,7 +53,7 @@ public class SelectObjects : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             draw = false;
-            Select();
+            HighlightSelected();
         }
 
         if (draw)
@@ -58,6 +63,7 @@ public class SelectObjects : MonoBehaviour
             if (startPos == endPos) return;
             endPos = GetAvailablePosition(endPos);
             selectedObjects.Clear();
+            selectedGroups.Clear();
 
             DrawSelectBox();
         }
@@ -75,21 +81,35 @@ public class SelectObjects : MonoBehaviour
 
         for (int j = 0; j < allowedSelectObj.Count; j++)
         {
+            if (allowedSelectObj[j] == null) continue;
             // трансформируем позицию объекта из мирового пространства, в пространство экрана
             Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
                 Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
 
             if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
             {
-                if (selectedObjects.Count == 0)
+                if (allowedSelectObj[j].selfGroup == null)
                 {
-                    selectedObjects.Add(allowedSelectObj[j]);
+                    if (selectedObjects.Count == 0)
+                    {
+                        selectedObjects.Add(allowedSelectObj[j]);
+                    }
+                    else if (!CheckUnit(allowedSelectObj[j]))
+                    {
+                        selectedObjects.Add(allowedSelectObj[j]);
+                    }
                 }
-                else if (!CheckUnit(allowedSelectObj[j]))
+                else
                 {
-                    selectedObjects.Add(allowedSelectObj[j]);
+                    if (!selectedGroups.Contains(allowedSelectObj[j].selfGroup))
+                    {
+                        selectedGroups.Add(allowedSelectObj[j].selfGroup);
+                        //SelectGroup(allowedSelectObj[j].selfGroup);
+
+                    }
                 }
             }
+
         }
     }
 
@@ -106,31 +126,50 @@ public class SelectObjects : MonoBehaviour
     }
 
 
+    public static bool HaveSelected()
+    {
+        if (selectedGroups.Count > 0 || selectedObjects.Count > 0) return true;
+        return false;
+    }
+
+
     public static void SetAllowed(Unit obj)
     {
         allowedSelectObj.Add(obj);
     }
 
-    private static void Select()
+    private static void HighlightSelected()
     {
-        if (selectedObjects.Count > 0)
+        List<Unit> unitForHighlight = new List<Unit>();
+        unitForHighlight.AddRange(selectedObjects);
+        foreach (var group in selectedGroups)
         {
-            for (int j = 0; j < selectedObjects.Count; j++)
-            {
-                Unit unit = selectedObjects[j];
-                if (unit != null)
-                {
-                    HighlightManager.HighlightUnit(unit);
-                }
-            }
+            unitForHighlight.AddRange(group.units);
         }
+        HighlightManager.HighlightUnits(unitForHighlight);
     }
 
     public static void SelectUnit(Unit unit)
     {
-        selectedObjects.Add(unit);
-        Select();
+        if(unit.selfGroup == null)
+        {
+            selectedObjects.Add(unit);
+            HighlightSelected();
+        }
+        else
+        {
+            selectedGroups.Add(unit.selfGroup);
+        }
     }
+
+    public static void SelectGroup(UnitGroup group)
+    {
+        foreach (var groupUnit in group.units)
+        {
+            selectedObjects.Add(groupUnit);
+        }
+    }
+
     //public static void DeselectUnit(Unit unit)
     //{
     //    selectedObjects.Remove(unit);
@@ -138,7 +177,11 @@ public class SelectObjects : MonoBehaviour
 
     public static void Deselect()
     {
+
+        Debug.Log("Deselect");
+
         selectedObjects.Clear();
+        selectedGroups.Clear();
         HighlightManager.Clear();
     }
 
@@ -156,33 +199,51 @@ public class SelectObjects : MonoBehaviour
         minY = point.y;
     }
 
-    public void SetSelected(Rect rect)
-    {
-        for (int j = 0; j < allowedSelectObj.Count; j++)
-        {
-            // трансформируем позицию объекта из мирового пространства, в пространство экрана
-            Vector2 tmp1 = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
-                Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
-            Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
-                Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
+    //public void SetSelected(Rect rect)
+    //{
+    //    for (int j = 0; j < allowedSelectObj.Count; j++)
+    //    {
+    //        // трансформируем позицию объекта из мирового пространства, в пространство экрана
+    //        //Vector2 tmp1 = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
+    //        //    Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
 
-            if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
-            {
-                if (selectedObjects.Count == 0)
-                {
-                    Debug.Log("allowedSelectObj");
+    //        Vector2 unitPoint = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
+    //            Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
 
-                    selectedObjects.Add(allowedSelectObj[j]);
-                }
-                else if (!CheckUnit(allowedSelectObj[j]))
-                {
-                    Debug.Log("!CheckUnit(");
 
-                    selectedObjects.Add(allowedSelectObj[j]);
-                }
-            }
-        }
-    }
+    //        if (rect.Contains(unitPoint)) // проверка, находится-ли текущий объект в рамке
+    //        {
+
+    //            if(allowedSelectObj[j].selfGroup == null)
+    //            {
+    //                Debug.Log(" null allowedSelectObj[j].selfGroup");
+
+    //                if (selectedObjects.Count == 0)
+    //                {
+    //                    selectedObjects.Add(allowedSelectObj[j]);
+    //                }
+    //                else if (!CheckUnit(allowedSelectObj[j]))
+    //                {
+    //                    selectedObjects.Add(allowedSelectObj[j]);
+    //                }
+    //            }
+    //            else
+    //            {
+
+    //                Debug.Log("allowedSelectObj[j].selfGroup");
+
+    //                foreach (var groupUnit in allowedSelectObj[j].selfGroup.units)
+    //                {
+
+    //                    Debug.Log("selected group");
+    //                    selectedObjects.Add(groupUnit);
+    //                }
+    //            }
+
+
+    //        }
+    //    }
+    //}
 
     private bool CheckPosition(Vector2 startPos, Vector2 endPos)
     {
@@ -196,6 +257,7 @@ public class SelectObjects : MonoBehaviour
     public static void ClearSelected()
     {
         selectedObjects.Clear();
+        selectedGroups.Clear();
         HighlightManager.Clear();
     }
 

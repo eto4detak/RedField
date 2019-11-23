@@ -14,30 +14,7 @@ public class Terrain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ChechClickRightMouse();
     }
 
-    private void OnMouseDown()
-    {
-        ClickLeftMouse();
-    }
-    private void ChechClickRightMouse()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            ClickRightMouse();
-        }
-    }
-    private void ClickLeftMouse()
-    {
-        Debug.Log("OnMouseDown");
-        MouseManager.LeftClick(gameObject, Input.mousePosition);
-    }
-    private void ClickRightMouse()
-    {
-        Debug.Log("Right ChechClickRightMouse");
 
-        MouseManager.RightClick(gameObject, Input.mousePosition);
-
-    }
 }
