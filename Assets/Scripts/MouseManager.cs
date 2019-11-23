@@ -31,6 +31,7 @@ public class MouseManager : MonoBehaviour
                 {
                     SelectObjects.Deselect();
                     SelectObjects.SelectUnit(filter);
+                    WorldManager.infoPanel.SelectUnit(filter.selfGroup);
                     return;
                 }
                 Terrain filterTerrain = mouseHit.collider.GetComponent(typeof(Terrain)) as Terrain;

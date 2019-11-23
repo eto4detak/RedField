@@ -6,7 +6,7 @@ public class WorldManager : MonoBehaviour
 {
     private HumanWarrior humanWarrior;
 
-    public static BottomPanel bottomPanel;
+    public static InfoPanel infoPanel;
     public static Character character;
     public static SelectObjects selectObjects;
     public static RunUnitManager runUnitManager;
@@ -20,7 +20,7 @@ public class WorldManager : MonoBehaviour
 
     void Awake()
     {
-        bottomPanel = (BottomPanel)FindObjectOfType(typeof(BottomPanel));
+        infoPanel = (InfoPanel)FindObjectOfType(typeof(InfoPanel));
         character = (Character)FindObjectOfType(typeof(Character));
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
         runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
@@ -69,7 +69,7 @@ public class WorldManager : MonoBehaviour
 
     private void SetSettings()
     {
-        RectTransform rt = bottomPanel.GetComponent(typeof(RectTransform)) as RectTransform;
+        RectTransform rt = infoPanel.GetComponent(typeof(RectTransform)) as RectTransform;
         selectObjects.SetForbiddenPosition(rt.offsetMax);
     }
 

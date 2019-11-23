@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -20,6 +18,19 @@ public class ButtonManager : MonoBehaviour
     public void CharacterJump()
     {
         WorldManager.character.Jump();
+    }
+
+    public void Attack()
+    {
+
+    }
+    public void Move()
+    {
+
+    }
+
+    public void Stop()
+    {
     }
 
 }

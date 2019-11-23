@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitGroup : MonoBehaviour
-{
+public class UnitGroup : MonoBehaviour, IFrontImage
+{   
+
     public UnitCommand command;
     int unitIndent = 2;
     internal List<Unit> units = new List<Unit>();
+
+    public Sprite FrontImage { get; set; }
 
     private void Awake()
     {
@@ -15,6 +18,7 @@ public class UnitGroup : MonoBehaviour
 
     protected virtual void Start()
     {
+       
     }
 
     // Update is called once per frame

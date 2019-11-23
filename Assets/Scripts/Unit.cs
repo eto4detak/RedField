@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour, IFrontImage
 {
     internal float aggression = 0f;
     internal NavMeshAgent agent;
@@ -29,13 +29,8 @@ public class Unit : MonoBehaviour
     internal float runSpeed = 2f;
     internal Rigidbody rb;
 
-    // public LayerMask groundMask;
-    // public Transform target;
-    //public float groundRadius;
-    //public Collider[] ground;
-
     internal Vector3? NewPosition { get => newPosition; set => newPosition = value; }
-
+    Sprite IFrontImage.FrontImage { get; set; }
 
     protected virtual void Awake()
     {

@@ -7,7 +7,6 @@ public class UnitCommand
 
 }
 
-
 public class AttackCommand : UnitCommand
 {
     private UnitGroup groupTarget;
