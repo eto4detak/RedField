@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    private HumanWarrior humanWarrior;
-
-    public static InfoPanel infoPanel;
-    public static Character character;
-    public static SelectObjects selectObjects;
-    public static RunUnitManager runUnitManager;
-    public static PlayerInputHandler playerInputHandler;
     public static List<UnitGroup> allGroups = new List<UnitGroup>();
-    
-    public static float startPositionY = 5.5f;
-    public static float minPositionY = -0.1f;
+    public static Character character;
     public static float deltaPositionY = 0.1f;
+    public static int groupCount = 0;
+    private HumanWarrior humanWarrior;
+    public static InfoPanel infoPanel;
+    public static float minPositionY = -0.1f;
+    public static PlayerInputHandler playerInputHandler;
+    public static RunUnitManager runUnitManager;
+    public static float startPositionY = 5.5f;
+    public static SelectObjects selectObjects;
 
 
     void Awake()
@@ -60,9 +59,7 @@ public class WorldManager : MonoBehaviour
                 GameObject prefabWrapper =  Instantiate(prefab, position, Quaternion.identity);
                 HumanWarrior warrion = prefabWrapper.GetComponent<HumanWarrior>();
 
-               // warrion.NewPosition = position +  new Vector3(i * 1.0f, 0, i * 1.0f);
                 warrion.NewPosition = new Vector3(10f, 5f, 10f);
-                //SelectObjects.unit.Add(warrion.gameObject);
             }
         }
     }

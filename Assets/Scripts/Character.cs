@@ -9,7 +9,7 @@ public class Character : MoveUnit
         base.Awake();
         jumpForce = 60f;
         slowDown = 5f;
-        health = 100f;
+        Health = 100f;
         maxHealth = 200f;
         mana = 100f;
         maxMana = 100f;

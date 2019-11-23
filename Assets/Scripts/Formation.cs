@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Formation : MonoBehaviour
 {
-    private static float groupIndent = 10f; 
+    internal static float groupIndent = 10f; 
     // Start is called before the first frame update
     void Start()
     {
@@ -17,27 +17,18 @@ public class Formation : MonoBehaviour
         
     }
 
-    public static void SetFormationRow(Vector3 newPosition)
+    public static void MoveFormationRow(List<UnitGroup> selectedGroups, Vector3 newPosition)
     {
-        if (SelectObjects.HaveSelected())
+        if(selectedGroups.Count > 0)
         {
-            foreach (var selectedUnit in SelectObjects.selectedObjects)
+            Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), selectedGroups.Count, groupIndent);
+            for (int i = 0; i < selectedGroups.Count; i++)
             {
-                selectedUnit.MoveToPoint(newPosition);
-            }
-            if(SelectObjects.selectedGroups.Count > 0)
-            {
-                Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), SelectObjects.selectedGroups.Count, groupIndent);
-                for (int i = 0; i < SelectObjects.selectedGroups.Count; i++)
-                {
-
-                    SelectObjects.selectedGroups[i].MoveGroupToPoint(newPosition,  groupPositions[i]);
-                }
+                selectedGroups[i].MoveGroupToPoint2D(newPosition,  groupPositions[i]);
             }
         }
     }
-
-    public static Vector3[] GetSquareGroupPositions(Vector3 point, int unitCount, float distance)
+    public static Vector3[] GetSquareGroupPositions(Vector3 newPosition, int unitCount, float distance)
     {
         int countInRow = Mathf.FloorToInt(Mathf.Sqrt(unitCount));
         Vector3[] newPositions = new Vector3[unitCount];
@@ -47,7 +38,8 @@ public class Formation : MonoBehaviour
         {
             float x = i % countInRow * distance - deltaX;
             float z = Mathf.CeilToInt(i / countInRow) * distance - deltaZ;
-            newPositions[i] = point + new Vector3(x, 0, z);
+            newPositions[i] = newPosition + new Vector3(x, 0, z);
+
         }
         return newPositions;
     }

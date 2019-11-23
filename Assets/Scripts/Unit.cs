@@ -2,13 +2,13 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Unit : MonoBehaviour, IFrontImage
+public class Unit : MonoBehaviour
 {
     internal float aggression = 0f;
     internal NavMeshAgent agent;
     internal float attackRadius = 2f;
     protected List<float> allTypeAggression = new List<float>();
-    public UnitCommand command;
+    //public IUnitCommand command;
     protected List<Unit> commandTargets = new List<Unit>();
     internal bool canDamage = true;
     internal bool canRun = true;
@@ -16,8 +16,8 @@ public class Unit : MonoBehaviour, IFrontImage
     protected Faction faction = Faction.Neutral;
     internal float jumpForce = 20.0f;
     internal bool isGrounded = true;
-    internal float health = 1f;
-    internal float maxHealth = 1f;
+    private float health = 100f;
+    internal float maxHealth = 100f;
     internal float mana = 1f;
     internal float maxMana = 1f;
     internal float maxAggression = 1f;
@@ -30,7 +30,16 @@ public class Unit : MonoBehaviour, IFrontImage
     internal Rigidbody rb;
 
     internal Vector3? NewPosition { get => newPosition; set => newPosition = value; }
-    Sprite IFrontImage.FrontImage { get; set; }
+    internal float Health { get => health;
+        set
+        {
+            health = value;
+            if(health <= 0)
+            {
+                Die();
+            }
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -41,17 +50,16 @@ public class Unit : MonoBehaviour, IFrontImage
         agent = GetComponent<NavMeshAgent>();
     }
 
+
     protected virtual void Start()
     {
-      
-
+       // command = new MoveCommand(selfGroup, transform.position, new Vector3());
     }
 
     protected virtual void Update()
     {
         CheckErrorPositionY();
         UpdateAction();
-       
     }
 
     void OnMouseDown()
@@ -63,6 +71,116 @@ public class Unit : MonoBehaviour, IFrontImage
         GetComponentInChildren<Renderer>().material.color = Color.white;
     }
 
+
+    private void OnCollisionEnter(Collision other)
+    {
+       
+    }
+
+    private void OnCollisionStay(Collision other)
+    {
+        Unit target = other.gameObject.GetComponent<Unit>();
+        if (target != null)
+        {
+            selfGroup.command.OnStay(target);
+        }
+    }
+
+
+
+
+    protected virtual void AimCounterpoise()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
+    }
+    private void CheckErrorPositionY()
+    {
+        if (transform.position.y < WorldManager.minPositionY)
+        {
+            transform.position = new Vector3(transform.position.x, WorldManager.startPositionY, transform.position.z);
+        }
+    }
+    public void Damage(Unit target, float val)
+    {
+        target.Health = Mathf.Max(target.Health - val, 0);
+    }
+
+    protected virtual void Die()
+    {
+        Destroy(gameObject);
+    }
+    public virtual void Jump()
+    {
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+    private float GetDistanceToTarget()
+    {
+        if (commandTargets[0] != null)
+        {
+            return Vector3.Distance(commandTargets[0].transform.position, transform.position);
+        }
+        return float.PositiveInfinity;
+    }
+
+    public static void SetAttackTarget(List<Unit> units, List<Unit> target)
+    {
+        foreach (var selectedUnit in units)
+        {
+            selectedUnit.SetAttackTarget(target);
+        }
+    }
+
+    public void SetAttackTarget(List<Unit> target)
+    {
+        commandTargets.Clear();
+       // command = UnitCommand.Attack;
+        commandTargets.AddRange(target);
+
+        if (commandTargets.Count > 0)
+        {
+            agent.destination = commandTargets[0].transform.position;
+        }
+    }
+
+    public virtual void ReceiveDamage(float damage = 1f)
+    {
+        Health -= damage;
+    }
+    public virtual void RunToPoint()
+    {
+        if ( NewPosition == null || !canRun) return;
+        if ( NewPosition == transform.position)
+        {
+            NewPosition = null;
+            return;
+        }
+        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
+    }
+
+    public void MoveToPoint(Vector3 point)
+    {
+        status = UnitStatus.Run;
+        Ray ray = Camera.main.ScreenPointToRay(point);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            agent.destination = hit.point;
+        }
+    }
+
+
+
+    //public void MoveGroupToPoint( Vector3 point)
+    //{
+
+    //    status = UnitStatus.Run;
+    //    Ray ray = Camera.main.ScreenPointToRay(point);
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        agent.destination = hit.point;
+    //    }
+    //}
 
     private void UpdateAction()
     {
@@ -91,108 +209,6 @@ public class Unit : MonoBehaviour, IFrontImage
         //}
     }
 
-
-    private float GetDistanceToTarget()
-    {
-        if (commandTargets[0] != null)
-        {
-            return Vector3.Distance(commandTargets[0].transform.position, transform.position);
-        }
-        return float.PositiveInfinity;
-    }
-
-
-    public void Damage(Unit target,  float val)
-    {
-        target.health = Mathf.Max(target.health - val, 0);
-    }
-
-    public static void SetAttackTarget(List<Unit> units, List<Unit> target)
-    {
-        foreach (var selectedUnit in units)
-        {
-            selectedUnit.SetAttackTarget(target);
-        }
-    }
-
-
-    public void SetAttackTarget(List<Unit> target)
-    {
-        commandTargets.Clear();
-       // command = UnitCommand.Attack;
-        commandTargets.AddRange(target);
-
-        if (commandTargets.Count > 0)
-        {
-            agent.destination = commandTargets[0].transform.position;
-        }
-    }   
-
-
-
-    private void CheckErrorPositionY()
-    {
-        if (transform.position.y < WorldManager.minPositionY)
-        {
-            transform.position = new Vector3(transform.position.x, WorldManager.startPositionY,transform.position.z);
-        }
-    }
-
-
-    public virtual void RunToPoint()
-    {
-        if ( NewPosition == null || !canRun) return;
-        if ( NewPosition == transform.position)
-        {
-            NewPosition = null;
-            return;
-        }
-        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
-    }
-
-    public virtual void ReceiveDamage()
-    {
-        Die();
-    }
-
-    protected virtual void Die()
-    {
-        Destroy(gameObject);
-    }
-    protected virtual void AimCounterpoise()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
-    }
-
-    public virtual void Jump()
-    {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-    }
-
-    public void MoveToPoint(Vector3 point)
-    {
-        status = UnitStatus.Run;
-        Ray ray = Camera.main.ScreenPointToRay(point);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            agent.destination = hit.point;
-        }
-    }
-
-
-
-    //public void MoveGroupToPoint( Vector3 point)
-    //{
-
-    //    status = UnitStatus.Run;
-    //    Ray ray = Camera.main.ScreenPointToRay(point);
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(ray, out hit))
-    //    {
-    //        agent.destination = hit.point;
-    //    }
-    //}
 }
 
 public enum Faction : int

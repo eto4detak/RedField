@@ -12,7 +12,7 @@ public class HumanWarrior : MoveUnit
     protected override void Start()
     {
         base.Start();
-        health = 44f;
+        Health = 44f;
         maxHealth = 77f;
         faction = Faction.Hostile;
     }

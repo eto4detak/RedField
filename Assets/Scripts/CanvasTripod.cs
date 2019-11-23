@@ -35,7 +35,7 @@ public class CanvasTripod : MonoBehaviour
     {
         if (currentUnit != null)
         {
-            healthBarImage.fillAmount = currentUnit.health / currentUnit.maxHealth;
+            healthBarImage.fillAmount = currentUnit.Health / currentUnit.maxHealth;
 
             if (hideFullHealthBar)
             {
