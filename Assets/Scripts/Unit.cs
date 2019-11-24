@@ -41,11 +41,11 @@ public class Unit : MonoBehaviour
         }
     }
 
-    protected virtual void Awake()
+    public virtual void Awake()
     {
       //  command = UnitCommand.Idle;
 
-        SelectObjects.SetAllowed(this);
+      //  SelectObjects.SetAllowed(this);
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
     }
@@ -95,9 +95,9 @@ public class Unit : MonoBehaviour
     }
     private void CheckErrorPositionY()
     {
-        if (transform.position.y < WorldManager.minPositionY)
+        if (transform.position.y < GManager.minPositionY)
         {
-            transform.position = new Vector3(transform.position.x, WorldManager.startPositionY, transform.position.z);
+            transform.position = new Vector3(transform.position.x, GManager.startPositionY, transform.position.z);
         }
     }
     public void Damage(Unit target, float val)

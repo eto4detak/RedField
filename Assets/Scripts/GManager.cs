@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldManager : MonoBehaviour
+public class GManager : MonoBehaviour
 {
     public static List<UnitGroup> allGroups = new List<UnitGroup>();
     public static Character character;
     public static float deltaPositionY = 0.1f;
     public static int groupCount = 0;
+    public static List<string> gameCommands = new List<string>();
+    public static GMode gMode;
+    public static PController pController;
     private HumanWarrior humanWarrior;
     public static InfoPanel infoPanel;
     public static float minPositionY = -0.1f;
@@ -16,7 +19,6 @@ public class WorldManager : MonoBehaviour
     public static float startPositionY = 5.5f;
     public static SelectObjects selectObjects;
 
-
     void Awake()
     {
         infoPanel = (InfoPanel)FindObjectOfType(typeof(InfoPanel));
@@ -24,16 +26,21 @@ public class WorldManager : MonoBehaviour
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
         runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
         playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
-        playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
+        gMode = (GMode)FindObjectOfType(typeof(GMode));
+        pController = (PController)FindObjectOfType(typeof(PController));
+        gameCommands.Add("Red");
+        gameCommands.Add("Blue");
     }
-
-
 
     void Start()
     {
         SetSettings();
 
         StartWorld();
+        foreach (var item in GManager.pController.EnemiesUnits)
+        {
+           
+        }
         
        // CreateHumanWarrior();
     }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MoveUnit
+public class Character : Unit
 {
-    protected override void Awake()
+    public override void Awake()
     {
         base.Awake();
         jumpForce = 60f;
@@ -17,13 +17,11 @@ public class Character : MoveUnit
         faction = Faction.Hero;
     }
 
-    // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
     }
 
-    // Update is called once per frame
    protected override void Update()
     {
         base.Update();

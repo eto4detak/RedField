@@ -74,6 +74,7 @@ class HighlightManager
         Renderer render;
         foreach (var gObject in gameList)
         {
+            if (gObject == null) continue;
             render = gObject.GetComponent<Renderer>();
             if (render != null)
             {

@@ -15,7 +15,7 @@ public class PlayerInputHandler : MonoBehaviour
     SelectObjects selectObjects;
     private void Start()
     {
-        selectObjects = WorldManager.selectObjects;
+        selectObjects = GManager.selectObjects;
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
     }

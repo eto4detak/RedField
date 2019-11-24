@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanWarrior : MoveUnit
+public class HumanWarrior : Unit
 {
-    protected override void Awake()
+    public override void Awake()
     {
         base.Awake();
     }

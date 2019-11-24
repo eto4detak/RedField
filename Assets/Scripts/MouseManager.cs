@@ -29,16 +29,14 @@ public class MouseManager : MonoBehaviour
                 Unit filter = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
                 if (filter)
                 {
-                    SelectObjects.Deselect();
-                    SelectObjects.SelectUnit(filter);
-                    WorldManager.infoPanel.SelectUnit(filter.selfGroup);
+                    OnClickLeftUnit(filter);
                     return;
                 }
                 Terrain filterTerrain = mouseHit.collider.GetComponent(typeof(Terrain)) as Terrain;
                 if (filterTerrain)
                 {
-                    ClickToTerrain(filterTerrain);
-                    WorldManager.infoPanel.ClearPanel();
+                    OnClickLeftTerrain(filterTerrain);
+
                     return;
                 }
             }
@@ -61,7 +59,7 @@ public class MouseManager : MonoBehaviour
                     UnitGroup target = unitTarget.selfGroup;
                     if (target)
                     {
-                        ClickRightAtUnit(target);
+                        OnClickRightUnit(target);
                         
                         return;
                     }
@@ -72,31 +70,51 @@ public class MouseManager : MonoBehaviour
                 Terrain filterTerrain = mouseHit.collider.GetComponent(typeof(Terrain)) as Terrain;
                 if (filterTerrain)
                 {
-                    ClickRightToTerrain(filterTerrain, Input.mousePosition);
+                    OnClickRightTerrain(filterTerrain, Input.mousePosition);
 
                     return;
                 }
             }
         }
     }
-    internal static void ClickToTerrain(Terrain terrain)
+
+    protected static void OnClickLeftUnit(Unit unit)
+    {
+        SelectObjects.Deselect();
+        SelectObjects.TrySelectUnit(unit);
+        GManager.infoPanel.SelectUnit(unit.selfGroup);
+    }
+    protected static void OnClickLeftTerrain(Terrain terrain)
     {
         if (SelectObjects.HaveSelected())
         {
             SelectObjects.Deselect();
         }
+        GManager.infoPanel.ClearPanel();
     }
-    internal static void ClickRightAtUnit(UnitGroup target)
+
+    internal static void OnClickRightUnit(UnitGroup target)
     {
         if (SelectObjects.HaveSelected())
         {
-            UnitGroup.SetAttackCommand(SelectObjects.selectedGroups, target);
+            if (GManager.pController.Team.Equals(target.team))
+            {
+                UnitGroup.SetPursueCommand(SelectObjects.selectedGroups, target);
+            }
+            else
+            {
+                UnitGroup.SetAttackCommand(SelectObjects.selectedGroups, target);
+            }
         }
-        WorldManager.infoPanel.SetTarget(target);
+        
+        GManager.infoPanel.SetTarget(target);
     }
-    internal static void ClickRightToTerrain(Terrain terrain, Vector3 newPosition)
+    internal static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
     {
-        UnitGroup.SetMoveCommand(SelectObjects.selectedGroups, newPosition);
-        WorldManager.infoPanel.ClearTarget();
+        if (SelectObjects.HaveSelected())
+        {
+            UnitGroup.SetMoveCommand(SelectObjects.selectedGroups, newPosition);
+        }
+        GManager.infoPanel.ClearTarget();
     }
 }

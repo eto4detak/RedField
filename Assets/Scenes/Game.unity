@@ -244,6 +244,9 @@ MonoBehaviour:
   frontImg: {fileID: 228628000}
   targetImg: {fileID: 1990480051}
   targetList: {fileID: 1099853546}
+  btnAttack: {fileID: 940146859}
+  btnMove: {fileID: 1527003137}
+  btnStop: {fileID: 635037506}
 --- !u!1 &134532804
 GameObject:
   m_ObjectHideFlags: 0

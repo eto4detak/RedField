@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SelectObjects : MonoBehaviour
 {
-    public static List<Unit> allowedSelectObj = new List<Unit>(); // массив всех юнитов, которых мы можем выделить
+    public static List<Unit> allowedSelectObj; // массив всех юнитов, которых мы можем выделить
     public static List<Unit> selectedObjects; // выделенные объекты
     public static List<UnitGroup> selectedGroups; // выделенные объекты
 
@@ -20,6 +20,11 @@ public class SelectObjects : MonoBehaviour
     {
         selectedObjects = new List<Unit>();
         selectedGroups = new List<UnitGroup>();
+    }
+
+    private void Start()
+    {
+        allowedSelectObj = GManager.pController.PlayerUnits;
     }
 
     private void Update()
@@ -128,7 +133,7 @@ public class SelectObjects : MonoBehaviour
 
     public static bool HaveSelected()
     {
-        if (selectedGroups.Count > 0 || selectedObjects.Count > 0) return true;
+        if (selectedGroups.Count > 0 ) return true;
         return false;
     }
 
@@ -149,17 +154,29 @@ public class SelectObjects : MonoBehaviour
         HighlightManager.HighlightUnits(unitForHighlight);
     }
 
-    public static void SelectUnit(Unit unit)
+    public static void TrySelectUnit(Unit unit)
     {
-        if(unit.selfGroup == null)
-        {
-            selectedObjects.Add(unit);
-            HighlightSelected();
-        }
-        else
+        Unit findUnit = allowedSelectObj.Find(x => x.Equals(unit));
+        if (findUnit != null)
         {
             selectedGroups.Add(unit.selfGroup);
+            HighlightSelected();
         }
+        
+
+        //if (unit.selfGroup == null)
+        //{
+        //    Unit findUnit = allowedSelectObj.Find(x => x.Equals(unit));
+        //    if (findUnit != null)
+        //    {
+        //        selectedObjects.Add(unit);
+        //        HighlightSelected();
+        //    }
+        //}
+        //else
+        //{
+        //    selectedGroups.Add(unit.selfGroup);
+        //}
     }
 
     public static void SelectGroup(UnitGroup group)
@@ -177,8 +194,6 @@ public class SelectObjects : MonoBehaviour
 
     public static void Deselect()
     {
-
-        Debug.Log("Deselect");
 
         selectedObjects.Clear();
         selectedGroups.Clear();

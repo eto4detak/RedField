@@ -51,7 +51,7 @@ public class HealthBar : MonoBehaviour
         var camPosition = Camera.main.transform.position;
         // camPosition.
         transform.LookAt(Camera.main.transform.position);
-         var wantedPos = Camera.main.WorldToViewportPoint(WorldManager.character.transform.position);
+         var wantedPos = Camera.main.WorldToViewportPoint(GManager.character.transform.position);
         // transform.position = wantedPos;
         //  transform.rotation.x = 
     }

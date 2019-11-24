@@ -3,24 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitGroup : MonoBehaviour, IFrontImage
-{   
+{
+    [Header("Team")]
+    public Teams team;
 
     public UnitCommand command;
     int unitIndent = 2;
     internal List<Unit> units = new List<Unit>();
-
+    private IEnumerator commandCoroutine;
     public Sprite FrontImage { get; set; }
 
-    private void Awake()
+    public virtual void Awake()
     {
-        WorldManager.groupCount++;
-        units.AddRange(GetComponents<Unit>());
-        command = new StopCommand();
+        GManager.groupCount++;
+        command = new StopCommand(this);
+        name = "UnitGroup " + GManager.groupCount;
+        foreach (var unit in GetComponentsInChildren<Unit>())
+        {
+            unit.selfGroup = this;
+            units.Add(unit);
+        }
     }
 
     protected virtual void Start()
     {
-       
+        if (GManager.gMode.unions.CheckEnemies(GManager.pController.Team, team))
+        {
+            GManager.pController.EnemiesUnits.AddRange(units);
+        }
+        else if (team.Equals(GManager.pController.Team))
+        {
+            GManager.pController.PlayerUnits.AddRange(units);
+        }
     }
 
     protected virtual void Update()
@@ -28,10 +42,21 @@ public class UnitGroup : MonoBehaviour, IFrontImage
         
     }
 
-
-
-
-
+    public bool CheckStopped()
+    {
+        bool flag = true;
+        for (int i = 0; i < units.Count; i++)
+        {
+            if(units[i] != null)
+            {
+               if( units[i].agent.remainingDistance > 0.2f)
+                {
+                    flag = false;
+                }
+            }
+        }
+        return flag;
+    }
 
     public static void CreateUnits(Vector3 position)
     {
@@ -39,12 +64,7 @@ public class UnitGroup : MonoBehaviour, IFrontImage
         if (group != null)
         {
             UnitGroup cloneUnitGroup = Instantiate(group, position, Quaternion.identity);
-            cloneUnitGroup.name = "UnitGroup " + WorldManager.groupCount;
-            foreach (var unit in cloneUnitGroup.GetComponentsInChildren<Unit>())
-            {
-                unit.selfGroup = cloneUnitGroup;
-                cloneUnitGroup.units.Add(unit);
-            }
+
         }
     }
     public IEnumerator DoCommand()
@@ -92,36 +112,48 @@ public class UnitGroup : MonoBehaviour, IFrontImage
 
     public static void SetMoveCommand(List<UnitGroup> groups, Vector3 newPosition)
     {
-        if (groups.Count > 0)
+        Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), SelectObjects.selectedGroups.Count, Formation.groupIndent);
+        for (int i = 0; i < groups.Count; i++)
         {
-            Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), SelectObjects.selectedGroups.Count, Formation.groupIndent);
-            for (int i = 0; i < groups.Count; i++)
-            {
-                groups[i].command = new MoveCommand(groups[i], newPosition, groupPositions[i]);
-            }
+            groups[i].command = new MoveCommand(groups[i], newPosition, groupPositions[i]);
         }
     }
 
     public static void SetAttackCommand(List<UnitGroup> attackingGroups, UnitGroup target)
     {
-
         foreach (var attackingGroup in attackingGroups)
         {
-            if (attackingGroup != null)
+            if (attackingGroup != null && attackingGroup != target)
             {
-
                 attackingGroup.command = new AttackCommand(attackingGroup, target);
             }
         }
     }
+    public static void SetPursueCommand(List<UnitGroup> pursuers, UnitGroup target)
+    {
+        foreach (var pursuer in pursuers)
+        {
+            if (pursuer != null && pursuer != target)
+            {
+                pursuer.command = new PursueCommand(pursuer, target);
+            }
+        }
+    }
+    
+
+
 
     public void StartCoroutineCommand()
     {
-        StartCoroutine(DoCommand());
+        commandCoroutine = DoCommand();
+        StartCoroutine(commandCoroutine);
     }
     public void StopCoroutineCommand()
     {
-        StopCoroutine(DoCommand());
+        if (commandCoroutine != null)
+        {
+            StopCoroutine(commandCoroutine);
+        }
     }
 
 

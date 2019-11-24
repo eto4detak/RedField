@@ -26,16 +26,24 @@ public class AttackCommand : UnitCommand
         Target = paramTarget;
         SelfGroup = paramSelf;
         DoCommand();
-        //SelfGroup.StartCoroutineCommand();
+        SelfGroup.StartCoroutineCommand();
     }
     public override void DoCommand()
     {
-        for (int i = 0; i < Target.units.Count; i++)
+        Debug.Log("AttackCommand " + Target.units.Count);
+
+        if(Target.units.Count > 0)
         {
-            if(Target.units[i] != null)
+            for (int i = 0; i < Target.units.Count; i++)
             {
-                SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
+                if (Target.units[i] != null)
+                {
+                    SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
+                    return;
+                }
             }
+            
+            SelfGroup.StopCoroutineCommand();
         }
     }
     public override void OnStay(Unit unitOther)
@@ -63,12 +71,20 @@ public class MoveCommand : UnitCommand
         SelfGroup = paramGroup;
         NewPosition = paramNewPosition;
         GroupOffset = paramGroupOffset;
+
+        SelfGroup.MoveGroupToPoint2D(NewPosition, GroupOffset);
         DoCommand();
+
+        SelfGroup.StartCoroutineCommand();
     }
 
     public override void DoCommand()
     {
-        SelfGroup.MoveGroupToPoint2D(NewPosition, GroupOffset);
+        Debug.Log("MoveCommand");
+        if (SelfGroup.CheckStopped())
+        {
+            SelfGroup.command = new StopCommand(SelfGroup);
+        }
     }
     public override void OnStay(Unit unit)
     {
@@ -81,14 +97,67 @@ public class StopCommand : UnitCommand
     public UnitGroup Target { get; set; }
     public Vector3 NewPosition { get; set; }
     public Vector3 GroupOffset { get; set; }
-    public StopCommand()
+    public StopCommand(UnitGroup paramSelfGroup)
     {
-
+        SelfGroup = paramSelfGroup;
+        SelfGroup.StopCoroutineCommand();
+        DoCommand();
     }
 
     public override void DoCommand()
     {
-        SelfGroup.MoveGroupToPoint2D(NewPosition, GroupOffset);
+        Debug.Log("StopCommand");
+
+    }
+
+    public override void OnStay(Unit unitOther)
+    {
+        //foreach (var unitTarget in Target.units)
+        //{
+        //    if (unitTarget == unitOther)
+        //    {
+        //        unitTarget.ReceiveDamage();
+        //    }
+        //}
+    }
+}
+
+public class PursueCommand : UnitCommand
+{
+    public UnitGroup SelfGroup { get; set; }
+    public UnitGroup Target { get; set; }
+    public PursueCommand(UnitGroup paramGroup, UnitGroup paramTarget)
+    {
+        SelfGroup = paramGroup;
+        Target = paramTarget;
+
+        DoCommand();
+        //SelfGroup.StopCoroutineCommand();
+        SelfGroup.StartCoroutineCommand();
+    }
+
+    public override void DoCommand()
+    {
+        Debug.Log("PursueCommand");
+
+        if (Target.units.Count > 0)
+        {
+            for (int i = 0; i < Target.units.Count; i++)
+            {
+                if (Target.units[i] != null)
+                {
+                    SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
+                    return;
+                }
+            }
+
+            SelfGroup.StopCoroutineCommand();
+        }
+
+        //if (SelfGroup.CheckStopped())
+        //{
+        //    SelfGroup.command = new StopCommand(SelfGroup);
+        //}
     }
     public override void OnStay(Unit unit)
     {

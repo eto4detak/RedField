@@ -17,7 +17,7 @@ public class ButtonManager : MonoBehaviour
 
     public void CharacterJump()
     {
-        WorldManager.character.Jump();
+        GManager.character.Jump();
     }
 
     public void Attack()
