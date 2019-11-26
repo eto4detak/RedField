@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitGroup : MonoBehaviour, IFrontImage
+public class UnitGroup : MonoBehaviour
 {
     [Header("Team")]
     public Teams team;
@@ -20,7 +20,7 @@ public class UnitGroup : MonoBehaviour, IFrontImage
         name = "UnitGroup " + GManager.groupCount;
         foreach (var unit in GetComponentsInChildren<Unit>())
         {
-            unit.selfGroup = this;
+            unit.group = this;
             units.Add(unit);
         }
     }
@@ -39,8 +39,14 @@ public class UnitGroup : MonoBehaviour, IFrontImage
 
     protected virtual void Update()
     {
-        
+        command.DoCommand();
     }
+
+
+
+
+
+
 
     public bool CheckStopped()
     {
@@ -64,23 +70,20 @@ public class UnitGroup : MonoBehaviour, IFrontImage
         if (group != null)
         {
             UnitGroup cloneUnitGroup = Instantiate(group, position, Quaternion.identity);
-
         }
     }
-    public IEnumerator DoCommand()
-    {
-        while (true)
-        {
-            command.DoCommand();
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
+    //public IEnumerator DoCommand()
+    //{
+    //    while (true)
+    //    {
+    //        command.DoCommand();
+    //        yield return new WaitForSeconds(0.5f);
+    //    }
+    //}
     public static UnitGroup GetPrefab()
     {
         return Resources.Load<UnitGroup>("Prefabs/UniversalGroup");
     }
-
-
 
     public void MoveGroupToPoint2D(Vector3 newPosition2d, Vector3 groupOffset3d)
     {
@@ -103,11 +106,8 @@ public class UnitGroup : MonoBehaviour, IFrontImage
         for (int i = 0; i < units.Count; i++)
         {
             if (units[i] == null) continue;
-            
             units[i].agent.destination = newPositions[i];
-            //units[i].agent.destination = newPosition;
         }
-
     }
 
     public static void SetMoveCommand(List<UnitGroup> groups, Vector3 newPosition)
@@ -139,20 +139,33 @@ public class UnitGroup : MonoBehaviour, IFrontImage
             }
         }
     }
-    
-
-
-
-    public void StartCoroutineCommand()
+    //public void StartCoroutineCommand()
+    //{
+    //    if (commandCoroutine != null)
+    //    {
+    //        Debug.Log("cancel commandCoroutine");
+    //        StopCoroutine(commandCoroutine);
+    //        StartCoroutine(commandCoroutine);
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("cancel commandCoroutine 1");
+    //        commandCoroutine = DoCommand();
+    //        StartCoroutine(commandCoroutine);
+    //    }
+    //}
+    //public void StopCoroutineCommand()
+    //{
+    //    if (commandCoroutine != null)
+    //    {
+    //        StopCoroutine(commandCoroutine);
+    //    }
+    //}
+    public void TryAttackUnit(Unit target)
     {
-        commandCoroutine = DoCommand();
-        StartCoroutine(commandCoroutine);
-    }
-    public void StopCoroutineCommand()
-    {
-        if (commandCoroutine != null)
+        if (GManager.gMode.unions.CheckEnemies(target.group.team, team))
         {
-            StopCoroutine(commandCoroutine);
+            target.ReceiveDamage();
         }
     }
 

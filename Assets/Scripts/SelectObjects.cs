@@ -93,7 +93,7 @@ public class SelectObjects : MonoBehaviour
 
             if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
             {
-                if (allowedSelectObj[j].selfGroup == null)
+                if (allowedSelectObj[j].group == null)
                 {
                     if (selectedObjects.Count == 0)
                     {
@@ -106,9 +106,9 @@ public class SelectObjects : MonoBehaviour
                 }
                 else
                 {
-                    if (!selectedGroups.Contains(allowedSelectObj[j].selfGroup))
+                    if (!selectedGroups.Contains(allowedSelectObj[j].group))
                     {
-                        selectedGroups.Add(allowedSelectObj[j].selfGroup);
+                        selectedGroups.Add(allowedSelectObj[j].group);
                         //SelectGroup(allowedSelectObj[j].selfGroup);
 
                     }
@@ -159,7 +159,7 @@ public class SelectObjects : MonoBehaviour
         Unit findUnit = allowedSelectObj.Find(x => x.Equals(unit));
         if (findUnit != null)
         {
-            selectedGroups.Add(unit.selfGroup);
+            selectedGroups.Add(unit.group);
             HighlightSelected();
         }
         

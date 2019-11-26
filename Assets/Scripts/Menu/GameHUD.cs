@@ -3,15 +3,25 @@ using System.Collections;
 using UnityEngine.UI;
 using System;
 
-public class InfoPanel : MonoBehaviour
+public class GameHUD : MonoBehaviour
 {
+
+    [Header("Images")]
     public GameObject frontImg;
     public GameObject targetImg;
     public GameObject targetList;
 
+    [Header("Commands Buttons")]
     public GameObject btnAttack;
     public GameObject btnMove;
     public GameObject btnStop;
+
+
+    [Header("UnitUI")]
+    public Text damage;
+    public Text armor;
+    public Text speed;
+
 
     void Start()
     {
@@ -38,6 +48,9 @@ public class InfoPanel : MonoBehaviour
         {
             frontImg.GetComponent<Button>().image.sprite = Resources.Load<Sprite>("Sprite/sqareUnit");
             UnitGroup group = self as UnitGroup;
+            damage.text = group.units[0].domage.ToString();
+            armor.text = group.units[0].armor.ToString();
+            speed.text = group.units[0].speed.ToString();
             if (group.command is AttackCommand)
             {
                 btnAttack.GetComponent<Button>().image.color = Color.red;

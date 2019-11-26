@@ -9,10 +9,12 @@ public class Unit : MonoBehaviour
     internal float attackRadius = 2f;
     protected List<float> allTypeAggression = new List<float>();
     //public IUnitCommand command;
+    internal float armor = 1f;
     protected List<Unit> commandTargets = new List<Unit>();
     internal bool canDamage = true;
     internal bool canRun = true;
-    internal float domageVal = 1f;
+    internal float domage = 1f;
+    internal UnitGroup group;
     protected Faction faction = Faction.Neutral;
     internal float jumpForce = 20.0f;
     internal bool isGrounded = true;
@@ -22,11 +24,10 @@ public class Unit : MonoBehaviour
     internal float maxMana = 1f;
     internal float maxAggression = 1f;
     protected UnitStatus status = UnitStatus.Norm;
-    internal UnitGroup selfGroup;
     protected float slowDown = 1f;
     internal static GameObject prefab;
     private Vector3? newPosition;
-    internal float runSpeed = 2f;
+    internal float speed = 2f;
     internal Rigidbody rb;
 
     internal Vector3? NewPosition { get => newPosition; set => newPosition = value; }
@@ -68,7 +69,7 @@ public class Unit : MonoBehaviour
 
     void OnMouseExit()
     {
-        GetComponentInChildren<Renderer>().material.color = Color.white;
+        //GetComponentInChildren<Renderer>().material.color = Color.white;
     }
 
 
@@ -80,18 +81,17 @@ public class Unit : MonoBehaviour
     private void OnCollisionStay(Collision other)
     {
         Unit target = other.gameObject.GetComponent<Unit>();
-        if (target != null)
-        {
-            selfGroup.command.OnStay(target);
-        }
+        if (target == null || target.group == group) return;
+        group.command.OnStay(target);
     }
+
 
 
 
 
     protected virtual void AimCounterpoise()
     {
-        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, speed * Time.deltaTime);
     }
     private void CheckErrorPositionY()
     {
@@ -154,7 +154,7 @@ public class Unit : MonoBehaviour
             NewPosition = null;
             return;
         }
-        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, runSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, speed * Time.deltaTime);
     }
 
     public void MoveToPoint(Vector3 point)

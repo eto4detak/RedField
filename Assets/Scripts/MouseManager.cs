@@ -56,7 +56,7 @@ public class MouseManager : MonoBehaviour
                 Unit unitTarget = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
                 if (unitTarget)
                 {
-                    UnitGroup target = unitTarget.selfGroup;
+                    UnitGroup target = unitTarget.group;
                     if (target)
                     {
                         OnClickRightUnit(target);
@@ -82,7 +82,7 @@ public class MouseManager : MonoBehaviour
     {
         SelectObjects.Deselect();
         SelectObjects.TrySelectUnit(unit);
-        GManager.infoPanel.SelectUnit(unit.selfGroup);
+        GManager.gameHUD.SelectUnit(unit.group);
     }
     protected static void OnClickLeftTerrain(Terrain terrain)
     {
@@ -90,7 +90,7 @@ public class MouseManager : MonoBehaviour
         {
             SelectObjects.Deselect();
         }
-        GManager.infoPanel.ClearPanel();
+        GManager.gameHUD.ClearPanel();
     }
 
     internal static void OnClickRightUnit(UnitGroup target)
@@ -107,7 +107,7 @@ public class MouseManager : MonoBehaviour
             }
         }
         
-        GManager.infoPanel.SetTarget(target);
+        GManager.gameHUD.SetTarget(target);
     }
     internal static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
     {
@@ -115,6 +115,6 @@ public class MouseManager : MonoBehaviour
         {
             UnitGroup.SetMoveCommand(SelectObjects.selectedGroups, newPosition);
         }
-        GManager.infoPanel.ClearTarget();
+        GManager.gameHUD.ClearTarget();
     }
 }

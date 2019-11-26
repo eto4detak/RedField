@@ -12,20 +12,18 @@ public class GManager : MonoBehaviour
     public static GMode gMode;
     public static PController pController;
     private HumanWarrior humanWarrior;
-    public static InfoPanel infoPanel;
+    public static GameHUD gameHUD;
     public static float minPositionY = -0.1f;
-    public static PlayerInputHandler playerInputHandler;
     public static RunUnitManager runUnitManager;
     public static float startPositionY = 5.5f;
     public static SelectObjects selectObjects;
 
     void Awake()
     {
-        infoPanel = (InfoPanel)FindObjectOfType(typeof(InfoPanel));
+        gameHUD = (GameHUD)FindObjectOfType(typeof(GameHUD));
         character = (Character)FindObjectOfType(typeof(Character));
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
         runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
-        playerInputHandler = (PlayerInputHandler)FindObjectOfType(typeof(PlayerInputHandler));
         gMode = (GMode)FindObjectOfType(typeof(GMode));
         pController = (PController)FindObjectOfType(typeof(PController));
         gameCommands.Add("Red");
@@ -37,10 +35,6 @@ public class GManager : MonoBehaviour
         SetSettings();
 
         StartWorld();
-        foreach (var item in GManager.pController.EnemiesUnits)
-        {
-           
-        }
         
        // CreateHumanWarrior();
     }
@@ -73,7 +67,7 @@ public class GManager : MonoBehaviour
 
     private void SetSettings()
     {
-        RectTransform rt = infoPanel.GetComponent(typeof(RectTransform)) as RectTransform;
+        RectTransform rt = gameHUD.GetComponent(typeof(RectTransform)) as RectTransform;
         selectObjects.SetForbiddenPosition(rt.offsetMax);
     }
 
